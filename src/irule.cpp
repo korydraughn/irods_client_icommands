@@ -9,6 +9,7 @@
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
 #include "irods_configuration_keywords.hpp"
+#include "irods_at_scope_exit.hpp"
 
 #include "boost/program_options.hpp"
 
@@ -235,6 +236,14 @@ main( int argc, char **argv ) {
                     rodsPathInp_t rodsPathInp;
                     rodsArguments_t myRodsArgs;
                     connFlag = 1;
+
+                    irods::at_scope_exit free_rods_path_input{[&rpi = rodsPathInp] {
+                        // clang-format off
+                        if (rpi.srcPath)  { std::free(rpi.srcPath); }
+                        if (rpi.destPath) { std::free(rpi.destPath); }
+                        if (rpi.targPath) { std::free(rpi.targPath); }
+                        // clang-format on
+                    }};
 
                     myargv[0] = strdup( fileName + 2 );
                     myargv[1] = saveFile;

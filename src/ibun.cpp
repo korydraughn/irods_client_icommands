@@ -9,6 +9,8 @@
 #include "parseCommandLine.h"
 #include "rodsPath.h"
 #include "bunUtil.h"
+#include "irods_at_scope_exit.hpp"
+
 void usage();
 
 int
@@ -25,6 +27,13 @@ main( int argc, char **argv ) {
     rodsPathInp_t rodsPathInp;
     int nArgv;
 
+    irods::at_scope_exit free_rods_path_input{[&rpi = rodsPathInp] {
+        // clang-format off
+        if (rpi.srcPath)  { std::free(rpi.srcPath); }
+        if (rpi.destPath) { std::free(rpi.destPath); }
+        if (rpi.targPath) { std::free(rpi.targPath); }
+        // clang-format on
+    }};
 
     optStr = "bhR:cxD:fZ"; // JMC - backport 4643
 

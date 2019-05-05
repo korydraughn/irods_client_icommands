@@ -10,6 +10,7 @@
 #include "rmUtil.h"
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
+#include "irods_at_scope_exit.hpp"
 
 void usage();
 
@@ -26,6 +27,13 @@ main( int argc, char **argv ) {
     char *optStr;
     rodsPathInp_t rodsPathInp;
 
+    irods::at_scope_exit free_rods_path_input{[&rpi = rodsPathInp] {
+        // clang-format off
+        if (rpi.srcPath)  { std::free(rpi.srcPath); }
+        if (rpi.destPath) { std::free(rpi.destPath); }
+        if (rpi.targPath) { std::free(rpi.targPath); }
+        // clang-format on
+    }};
 
     optStr = "hfruUvVfn:Z"; // JMC - backport 4552
 
