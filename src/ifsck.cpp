@@ -7,6 +7,8 @@
 #include "parseCommandLine.h"
 #include "rodsPath.h"
 #include "fsckUtil.h"
+#include "irods_at_scope_exit.hpp"
+
 void usage();
 
 static int set_genquery_inp_from_physical_path_using_hostname(genQueryInp_t* genquery_inp, const char* physical_path, const char* hostname) {
@@ -53,6 +55,14 @@ main( int argc, char **argv ) {
     rcComm_t *conn;
     rodsArguments_t myRodsArgs;
     rodsPathInp_t rodsPathInp;
+
+    irods::at_scope_exit free_rods_path_input{[&rpi = rodsPathInp] {
+        // clang-format off
+        if (rpi.srcPath)  { std::free(rpi.srcPath); }
+        if (rpi.destPath) { std::free(rpi.destPath); }
+        if (rpi.targPath) { std::free(rpi.targPath); }
+        // clang-format on
+    }};
 
     const char *optStr = "hrKR:";
 
