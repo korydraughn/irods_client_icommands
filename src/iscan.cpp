@@ -7,6 +7,8 @@
 #include "parseCommandLine.h"
 #include "rodsPath.h"
 #include "scanUtil.h"
+#include "irods_at_scope_exit.hpp"
+
 void usage();
 
 int
@@ -43,6 +45,15 @@ main( int argc, char **argv ) {
     }
 
     rodsPathInp_t rodsPathInp;
+
+    irods::at_scope_exit free_rods_path_input{[&rpi = rodsPathInp] {
+        // clang-format off
+        if (rpi.srcPath)  { std::free(rpi.srcPath); }
+        if (rpi.destPath) { std::free(rpi.destPath); }
+        if (rpi.targPath) { std::free(rpi.targPath); }
+        // clang-format on
+    }};
+
     status = parseCmdLinePath( argc, argv, optind, &myEnv,
                                srcType, NO_INPUT_T, 0, &rodsPathInp );
 
