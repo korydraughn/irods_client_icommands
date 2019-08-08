@@ -88,36 +88,85 @@ set(
   )
 
 foreach(EXECUTABLE ${IRODS_CLIENT_ICOMMANDS_EXECUTABLES})
-  add_executable(
-    ${EXECUTABLE}
-    ${CMAKE_SOURCE_DIR}/src/${EXECUTABLE}.cpp
-    )
+  set(SOURCE_FILES ${EXECUTABLE}_SOURCE_FILES)
+  set(${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/${EXECUTABLE}.cpp)
+
+  if (${EXECUTABLE} STREQUAL "ils")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/lsUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "itrim")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/trimUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "mcollUtil")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/mcollUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "imkdir")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/mkdirUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "icp")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/cpUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "iphymv")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/phymvUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "imv")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/mvUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "iget")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/getUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "irepl")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/replUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "ibun")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/bunUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "iphybun")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/phybunUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "ifsck")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/fsckUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "ireg")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/regUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "imcoll")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/mcollUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "ichksum")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/chksumUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "irm")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/rmUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "iput")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/putUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "irmtrash")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/rmtrashUtil.cpp)
+  endif()
+
+  add_executable(${EXECUTABLE} ${${SOURCE_FILES}})
+
+  set(IRODS_CLIENT_C_INCLUDE_ROOT /home/kory/dev/prog/cpp/irods_client_library_c/include)
+  set(IRODS_CLIENT_C_LIB_ROOT /home/kory/dev/prog/cpp/build_irods_client_library_c)
+
   target_link_libraries(
     ${EXECUTABLE}
     PRIVATE
-    irods_client
-    irods_plugin_dependencies
-    irods_common
-    ${IRODS_EXTERNALS_FULLPATH_AVRO}/lib/libavrocpp.so
-    ${IRODS_EXTERNALS_FULLPATH_BOOST}/lib/libboost_filesystem.so
+    ${IRODS_CLIENT_C_LIB_ROOT}/libirods_client_c.so
+    #irods_client
+    #irods_plugin_dependencies
+    #irods_common
+    #${IRODS_EXTERNALS_FULLPATH_AVRO}/lib/libavrocpp.so
+    #${IRODS_EXTERNALS_FULLPATH_BOOST}/lib/libboost_filesystem.so
     ${IRODS_EXTERNALS_FULLPATH_BOOST}/lib/libboost_program_options.so
-    ${IRODS_EXTERNALS_FULLPATH_BOOST}/lib/libboost_system.so
-    ${IRODS_EXTERNALS_FULLPATH_ZMQ}/lib/libzmq.so
+    #${IRODS_EXTERNALS_FULLPATH_BOOST}/lib/libboost_system.so
+    #${IRODS_EXTERNALS_FULLPATH_ZMQ}/lib/libzmq.so
     )
   target_include_directories(
     ${EXECUTABLE}
     PRIVATE
-    ${IRODS_INCLUDE_DIRS}
-    ${IRODS_EXTERNALS_FULLPATH_AVRO}/include
+    ${CMAKE_SOURCE_DIR}/src/impl
+    ${IRODS_CLIENT_C_INCLUDE_ROOT}/api
+    ${IRODS_CLIENT_C_INCLUDE_ROOT}/core
+    ${IRODS_CLIENT_C_INCLUDE_ROOT}/hasher
+    ${IRODS_CLIENT_C_INCLUDE_ROOT}/rbudp
+    #${IRODS_INCLUDE_DIRS}
+    #${IRODS_EXTERNALS_FULLPATH_AVRO}/include
     ${IRODS_EXTERNALS_FULLPATH_BOOST}/include
-    ${IRODS_EXTERNALS_FULLPATH_ARCHIVE}/include
-    ${IRODS_EXTERNALS_FULLPATH_CPPZMQ}/include
-    ${IRODS_EXTERNALS_FULLPATH_ZMQ}/include
+    #${IRODS_EXTERNALS_FULLPATH_ARCHIVE}/include
+    #${IRODS_EXTERNALS_FULLPATH_CPPZMQ}/include
+    #${IRODS_EXTERNALS_FULLPATH_ZMQ}/include
     ${IRODS_EXTERNALS_FULLPATH_JSON}/include
     )
-  target_compile_definitions(${EXECUTABLE} PRIVATE ${IRODS_COMPILE_DEFINITIONS} BOOST_SYSTEM_NO_DEPRECATED)
+  target_compile_definitions(${EXECUTABLE} PRIVATE ${IRODS_COMPILE_DEFINITIONS} BOOST_SYSTEM_NO_DEPRECATED ACCESS_INHERIT="inherit" ACCESS_NO_INHERIT="noinherit" RODS_API_VERSION="d" RODS_REL_VERSION="rods4.3.0")
   target_compile_options(${EXECUTABLE} PRIVATE -Wno-write-strings)
-  set_property(TARGET ${EXECUTABLE} PROPERTY CXX_STANDARD ${IRODS_CXX_STANDARD})
+  #set_property(TARGET ${EXECUTABLE} PROPERTY CXX_STANDARD ${IRODS_CXX_STANDARD})
+  set_property(TARGET ${EXECUTABLE} PROPERTY CXX_STANDARD 17)
   install(
     TARGETS
     ${EXECUTABLE}

@@ -10,7 +10,7 @@
 #include "irods_children_parser.hpp"
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
-#include "irods_resource_constants.hpp"
+//#include "irods_resource_constants.hpp"
 #include "irods_exception.hpp"
 
 #include <iostream>
