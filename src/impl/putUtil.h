@@ -8,6 +8,7 @@
 #include "rodsClient.h"
 #include "parseCommandLine.h"
 #include "rodsPath.h"
+#include "bulkOprInfo.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,19 +20,6 @@ extern "C" {
 #define BULK_OPR_LARGE_FILES 0x2 // bulk opr for large files
 
 #define DEF_PHY_BUN_ROOT_DIR "/tmp"
-
-typedef struct {
-    int flags;
-    int count;
-    int forceFlagAdded;
-    int size;
-    char cwd[MAX_NAME_LEN];
-    char phyBunDir[MAX_NAME_LEN];
-    char cachedTargPath[MAX_NAME_LEN];
-    char cachedSubPhyBunDir[MAX_NAME_LEN];
-    char phyBunPath[MAX_NUM_BULK_OPR_FILES][MAX_NAME_LEN];
-    bytesBuf_t bytesBuf;
-} bulkOprInfo_t;
 
 int
 putUtil( rcComm_t **myConn, rodsEnv *myEnv, rodsArguments_t *myRodsArgs,

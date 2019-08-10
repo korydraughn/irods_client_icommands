@@ -76,7 +76,7 @@ set(
   irm
   irmdir
   irmtrash
-  irods-grid
+  #irods-grid # Removed temporarily
   irsync
   irule
   iscan
@@ -91,30 +91,42 @@ foreach(EXECUTABLE ${IRODS_CLIENT_ICOMMANDS_EXECUTABLES})
   set(SOURCE_FILES ${EXECUTABLE}_SOURCE_FILES)
   set(${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/${EXECUTABLE}.cpp)
 
-  if (${EXECUTABLE} STREQUAL "ils")
-    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/lsUtil.cpp)
+  if (${EXECUTABLE} STREQUAL "irule")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/getUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "ils")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/lsUtil.cpp # Header declares printCollOrDir
+                                ${CMAKE_SOURCE_DIR}/src/impl/putUtil.cpp
+                                ${CMAKE_SOURCE_DIR}/src/impl/getUtil.cpp) # Defines setSessionTicket
   elseif (${EXECUTABLE} STREQUAL "itrim")
     list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/trimUtil.cpp)
   elseif (${EXECUTABLE} STREQUAL "mcollUtil")
     list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/mcollUtil.cpp)
   elseif (${EXECUTABLE} STREQUAL "imkdir")
     list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/mkdirUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "irmdir")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/rmdirUtil.cpp
+                                ${CMAKE_SOURCE_DIR}/src/impl/rmUtil.cpp)
   elseif (${EXECUTABLE} STREQUAL "icp")
-    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/cpUtil.cpp)
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/cpUtil.cpp
+                                ${CMAKE_SOURCE_DIR}/src/impl/putUtil.cpp) 
   elseif (${EXECUTABLE} STREQUAL "iphymv")
     list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/phymvUtil.cpp)
   elseif (${EXECUTABLE} STREQUAL "imv")
     list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/mvUtil.cpp)
   elseif (${EXECUTABLE} STREQUAL "iget")
-    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/getUtil.cpp)
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/getUtil.cpp # Header declares setSessionTicket
+                                ${CMAKE_SOURCE_DIR}/src/impl/putUtil.cpp
+                                ${CMAKE_SOURCE_DIR}/src/impl/lsUtil.cpp) # Defines printCollOrDir
   elseif (${EXECUTABLE} STREQUAL "irepl")
-    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/replUtil.cpp)
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/replUtil.cpp
+                                ${CMAKE_SOURCE_DIR}/src/impl/putUtil.cpp) 
   elseif (${EXECUTABLE} STREQUAL "ibun")
     list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/bunUtil.cpp)
   elseif (${EXECUTABLE} STREQUAL "iphybun")
     list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/phybunUtil.cpp)
   elseif (${EXECUTABLE} STREQUAL "ifsck")
-    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/fsckUtil.cpp)
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/fsckUtil.cpp
+                                ${CMAKE_SOURCE_DIR}/src/impl/scanUtil.cpp)
   elseif (${EXECUTABLE} STREQUAL "ireg")
     list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/regUtil.cpp)
   elseif (${EXECUTABLE} STREQUAL "imcoll")
@@ -127,6 +139,10 @@ foreach(EXECUTABLE ${IRODS_CLIENT_ICOMMANDS_EXECUTABLES})
     list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/putUtil.cpp)
   elseif (${EXECUTABLE} STREQUAL "irmtrash")
     list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/rmtrashUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "iscan")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/scanUtil.cpp)
+  elseif (${EXECUTABLE} STREQUAL "irsync")
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/rsyncUtil.cpp)
   endif()
 
   add_executable(${EXECUTABLE} ${${SOURCE_FILES}})
@@ -134,10 +150,14 @@ foreach(EXECUTABLE ${IRODS_CLIENT_ICOMMANDS_EXECUTABLES})
   set(IRODS_CLIENT_C_INCLUDE_ROOT /home/kory/dev/prog/cpp/irods_client_library_c/include)
   set(IRODS_CLIENT_C_LIB_ROOT /home/kory/dev/prog/cpp/build_irods_client_library_c)
 
+  set(IRODS_CLIENT_CPP_INCLUDE_ROOT /home/kory/dev/prog/cpp/irods_client_library_cpp/include)
+  set(IRODS_CLIENT_CPP_LIB_ROOT /home/kory/dev/prog/cpp/build_irods_client_library_cpp)
+
   target_link_libraries(
     ${EXECUTABLE}
     PRIVATE
     ${IRODS_CLIENT_C_LIB_ROOT}/libirods_client_c.so
+    ${IRODS_CLIENT_CPP_LIB_ROOT}/libirods_client_cpp.so
     #irods_client
     #irods_plugin_dependencies
     #irods_common
@@ -155,8 +175,10 @@ foreach(EXECUTABLE ${IRODS_CLIENT_ICOMMANDS_EXECUTABLES})
     ${IRODS_CLIENT_C_INCLUDE_ROOT}/core
     ${IRODS_CLIENT_C_INCLUDE_ROOT}/hasher
     ${IRODS_CLIENT_C_INCLUDE_ROOT}/rbudp
+    ${IRODS_CLIENT_CPP_INCLUDE_ROOT}
+    ${IRODS_CLIENT_CPP_INCLUDE_ROOT}/filesystem/include
     #${IRODS_INCLUDE_DIRS}
-    #${IRODS_EXTERNALS_FULLPATH_AVRO}/include
+    ${IRODS_EXTERNALS_FULLPATH_AVRO}/include
     ${IRODS_EXTERNALS_FULLPATH_BOOST}/include
     #${IRODS_EXTERNALS_FULLPATH_ARCHIVE}/include
     ${IRODS_EXTERNALS_FULLPATH_CPPZMQ}/include
