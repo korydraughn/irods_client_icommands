@@ -92,7 +92,9 @@ foreach(EXECUTABLE ${IRODS_CLIENT_ICOMMANDS_EXECUTABLES})
   set(${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/${EXECUTABLE}.cpp)
 
   if (${EXECUTABLE} STREQUAL "irule")
-    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/getUtil.cpp)
+    list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/getUtil.cpp
+                                ${CMAKE_SOURCE_DIR}/src/impl/putUtil.cpp
+                                ${CMAKE_SOURCE_DIR}/src/impl/lsUtil.cpp) # Defines printCollOrDir
   elseif (${EXECUTABLE} STREQUAL "ils")
     list(APPEND ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/src/impl/lsUtil.cpp # Header declares printCollOrDir
                                 ${CMAKE_SOURCE_DIR}/src/impl/putUtil.cpp
