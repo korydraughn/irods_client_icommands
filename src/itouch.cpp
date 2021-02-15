@@ -72,6 +72,11 @@ int main(int _argc, char* _argv[])
         irods::experimental::client_connection comm;
         RcComm& comm_ref = comm;
 
+        // Set the version of the iRODS server this binary is built to
+        // communicate with. This is necessary for handling PackStruct XML
+        // encoding issues.
+        utils::store_server_version_in_client_properties(comm);
+
         if (const auto ec = rc_touch(&comm_ref, json_input.data()); ec < 0) {
             printErrorStack(comm_ref.rError);
         }

@@ -76,6 +76,11 @@ int main(int argc, char* argv[])
 
         irods::experimental::client_connection conn;
 
+        // Set the version of the iRODS server this binary is built to
+        // communicate with. This is necessary for handling PackStruct XML
+        // encoding issues.
+        utils::store_server_version_in_client_properties(conn);
+
         irods::at_scope_exit print_errors_on_exit{[&conn] {
             printErrorStack(static_cast<rcComm_t*>(conn)->rError);
         }};

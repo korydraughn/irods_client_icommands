@@ -1,14 +1,12 @@
-/*** Copyright (c), The Regents of the University of California            ***
- *** For more infophybunation please refer to files in the COPYRIGHT directory ***/
-/*
- * iphybun - The irods phybun utility
-*/
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
 #include "rodsClient.h"
 #include "parseCommandLine.h"
 #include "rodsPath.h"
 #include "phybunUtil.h"
+
+#include "utility.hpp"
+
 void usage();
 
 int
@@ -71,6 +69,11 @@ main( int argc, char **argv ) {
     if ( conn == NULL ) {
         exit( 2 );
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*conn);
 
     status = clientLogin( conn );
     if ( status != 0 ) {

@@ -1,10 +1,3 @@
-/*** Copyright (c), The Regents of the University of California            ***
- *** For more information please refer to files in the COPYRIGHT directory ***/
-
-/*
-  This is a regular-user level utility to list the resources.
-*/
-
 #include "rods.h"
 #include "rodsClient.h"
 #include "irods_children_parser.hpp"
@@ -13,11 +6,12 @@
 #include "irods_resource_constants.hpp"
 #include "irods_exception.hpp"
 
+#include "utility.hpp"
+
 #include <iostream>
 #include <vector>
 
 #define BIG_STR 200
-
 
 // tree drawing gfx
 enum DrawingStyle {
@@ -30,7 +24,6 @@ const std::string middle_child_connector[2] = {"|-- ", "\u251C\u2500\u2500 "};
 const std::string last_child_connector[2] = {"`-- ", "\u2514\u2500\u2500 "};
 const std::string vertical_pipe[2] = {"|   ", "\u2502   "};
 const std::string indent = "    ";
-
 
 void usage();
 
@@ -482,6 +475,11 @@ main( int argc, char **argv ) {
 
             return 2;
         }
+
+        // Set the version of the iRODS server this binary is built to
+        // communicate with. This is necessary for handling PackStruct XML
+        // encoding issues.
+        utils::store_server_version_in_client_properties(*Conn);
 
         status = clientLogin( Conn );
         if ( status != 0 ) {

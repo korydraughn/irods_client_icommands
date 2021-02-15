@@ -1,22 +1,16 @@
-/*** Copyright (c), The Regents of the University of California            ***
- *** For more information please refer to files in the COPYRIGHT directory ***/
-
-/*
-  A user interface for deleting delayed execution rules
-*/
-
 #include "rodsClient.h"
 #include "parseCommandLine.h"
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
 
+#include "utility.hpp"
+
 #define MAX_SQL 300
 #define BIG_STR 200
 
 void usage();
-int
-qdelUtil( rcComm_t *conn, char *userName, int allFlag,
-          rodsArguments_t *myRodsArgs );
+
+int qdelUtil( rcComm_t *conn, char *userName, int allFlag, rodsArguments_t *myRodsArgs );
 
 int debug = 0;
 
@@ -96,6 +90,11 @@ main( int argc, char **argv ) {
     if ( Conn == NULL ) {
         exit( 2 );
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*Conn);
 
     status = clientLogin( Conn );
     if ( status != 0 ) {

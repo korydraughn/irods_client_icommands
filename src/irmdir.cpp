@@ -1,4 +1,3 @@
-#include <fcntl.h>
 #include "rods.h"
 #include "rodsPath.h"
 #include "rmdirUtil.h"
@@ -7,7 +6,11 @@
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
 
+#include "utility.hpp"
+
 #include "boost/program_options.hpp"
+
+#include <fcntl.h>
 
 void usage( char *prog );
 
@@ -16,7 +19,8 @@ parse_program_options(
     int                                    _argc,
     char**                                 _argv,
     rodsArguments_t&                       _rods_args,
-    boost::program_options::variables_map& _vm ) {
+    boost::program_options::variables_map& _vm )
+{
     namespace po = boost::program_options;
 
     po::options_description irmdir_options("irmdir options");
@@ -116,6 +120,11 @@ main( int argc, char **argv ) {
     if ( Conn == NULL ) {
         exit( 2 );
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*Conn);
 
     status = clientLogin( Conn );
     if ( status != 0 ) {

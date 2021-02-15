@@ -1,5 +1,3 @@
-/*** Copyright (c), The Regents of the University of California            ***
- *** For more information please refer to files in the COPYRIGHT directory ***/
 #include "rods.h"
 #include "parseCommandLine.h"
 #include "rcMisc.h"
@@ -52,7 +50,6 @@ main( int argc, char **argv ) {
 
     exit( 0 );
 }
-
 
 void usage( char *prog ) {
     printf( "Exits iRODS session (cwd) and optionally removes\n" );

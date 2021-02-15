@@ -7,6 +7,8 @@
 #include "query_builder.hpp"
 #include "rodsClient.h"
 
+#include "utility.hpp"
+
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -1736,6 +1738,11 @@ main( int argc, char **argv ) {
         free( mySubName );
         return 2;
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*Conn);
 
     status = clientLogin( Conn );
     if ( status != 0 ) {

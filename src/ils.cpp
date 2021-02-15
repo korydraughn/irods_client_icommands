@@ -1,27 +1,21 @@
-/*
- * ils - The irods ls utility
-*/
-
 #include "rodsClient.h"
 #include "parseCommandLine.h"
 #include "rodsPath.h"
 #include "lsUtil.h"
-
-
 #include "irods_buffer_encryption.hpp"
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
 
+#include "utility.hpp"
+
 #include <string>
 #include <iostream>
-
-
+#include <sstream>
 
 void usage();
 
-int
-main( int argc, char **argv ) {
-
+int main( int argc, char **argv )
+{
     signal( SIGPIPE, SIG_IGN );
 
     int status;
@@ -41,6 +35,7 @@ main( int argc, char **argv ) {
         printf( "Use -h for help\n" );
         exit( 1 );
     }
+
     if ( myRodsArgs.help == True ) {
         usage();
         exit( 0 );
@@ -62,16 +57,17 @@ main( int argc, char **argv ) {
         exit( 1 );
     }
 
-    conn = rcConnect(
-               myEnv.rodsHost,
-               myEnv.rodsPort,
-               myEnv.rodsUserName,
-               myEnv.rodsZone,
-               0, &errMsg );
+    conn = rcConnect(myEnv.rodsHost, myEnv.rodsPort, myEnv.rodsUserName, myEnv.rodsZone, 0, &errMsg);
 
-    if ( conn == NULL ) {
+    if (!conn) {
         exit( 2 );
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*conn);
+
     // =-=-=-=-=-=-=-
     // initialize pluggable api table
     irods::api_entry_table&  api_tbl = irods::get_client_api_table();
@@ -93,14 +89,12 @@ main( int argc, char **argv ) {
     if ( status < 0 ) {
         exit( 4 );
     }
-    else {
-        exit( 0 );
-    }
 
+    exit( 0 );
 }
 
-void
-usage() {
+void usage()
+{
     char *msgs[] = {
         "Usage: ils [-ArlLv] dataObj|collection ... ",
         "Usage: ils --bundle [-r] dataObj|collection ... ",
@@ -118,6 +112,7 @@ usage() {
         "     /myZone/bundle collection) created by iphybun command.",
         ""
     };
+
     int i;
     for ( i = 0;; i++ ) {
         if ( strlen( msgs[i] ) == 0 ) {
@@ -125,5 +120,7 @@ usage() {
         }
         printf( "%s\n", msgs[i] );
     }
+
     printReleaseInfo( "ils" );
 }
+

@@ -1,14 +1,13 @@
-/*** Copyright (c), The Regents of the University of California            ***
- *** For more information please refer to files in the COPYRIGHT directory ***/
-
-/* User command to change their password. */
 #include "rods.h"
 #include "rodsClient.h"
-#include <unistd.h>
-#include <termios.h>
-#include "termiosUtil.hpp"
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
+#include "termiosUtil.hpp"
+
+#include "utility.hpp"
+
+#include <unistd.h>
+#include <termios.h>
 
 #include <iostream>
 #include <string>
@@ -101,6 +100,11 @@ main( int argc, char **argv ) {
                  myEnv.rodsHost );
         exit( 2 );
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*Conn);
 
     /* and check that the user/password is OK */
     status = clientLogin( Conn );

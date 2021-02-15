@@ -1,12 +1,12 @@
-/*** Copyright (c) 2010 Data Intensive Cyberinfrastructure Foundation. All rights reserved.    ***
- *** For full copyright notice please refer to files in the COPYRIGHT directory                ***/
-/* Written by Jean-Yves Nief of CCIN2P3 and copyright assigned to Data Intensive Cyberinfrastructure Foundation */
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
 #include "rodsClient.h"
 #include "parseCommandLine.h"
 #include "rodsPath.h"
 #include "fsckUtil.h"
+
+#include "utility.hpp"
+
 void usage();
 
 static int set_genquery_inp_from_physical_path_using_hostname(genQueryInp_t* genquery_inp, const char* physical_path, const char* hostname) {
@@ -40,7 +40,6 @@ static int set_genquery_inp_from_physical_path_using_resource_hierarchy(genQuery
     addInxVal(&genquery_inp->sqlCondInp, COL_D_RESC_HIER, condStr);
     return 0;
 }
-
 
 int
 main( int argc, char **argv ) {
@@ -95,6 +94,11 @@ main( int argc, char **argv ) {
     if ( conn == NULL ) {
         return 2;
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*conn);
 
     if ( strcmp( myEnv.rodsUserName, PUBLIC_USER_NAME ) != 0 ) {
         status = clientLogin( conn );

@@ -1,19 +1,18 @@
-/*** Copyright (c), The University of North Carolina            ***
- *** For more information please refer to files in the COPYRIGHT directory ***/
-/* ixmsg.c - Xmessage communicator */
-
 #include "rodsClient.h"
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
 #include "irods_configuration_keywords.hpp"
+
+#include "utility.hpp"
+
 #include <cctype>
+
 rodsEnv myRodsEnv;
 rErrMsg_t errMsg;
 int  connectFlag = 0;
 
 void
 printIxmsgHelp( const char *cmd ) {
-
     printf( "DEPRECATED\n" );
     printf( "Usage: %s s [-t ticketNum] [-n startingMessageNumber] [-r numOfReceivers] [-H header] [-M message] \n" , cmd );
     printf( "Usage: %s r [-n NumberOfMessages] [-t ticketNum] [-s startingSequenceNumber] [-c conditionString]\n" , cmd );
@@ -29,7 +28,6 @@ printIxmsgHelp( const char *cmd ) {
     printf( "    e: erase a message \n" );
     printReleaseInfo( "ixmsg" );
 }
-
 
 int
 sendIxmsg( rcComm_t **inconn, sendXmsgInp_t *sendXmsgInp ) {
@@ -48,6 +46,12 @@ sendIxmsg( rcComm_t **inconn, sendXmsgInp_t *sendXmsgInp ) {
             }
             continue;
         }
+
+        // Set the version of the iRODS server this binary is built to
+        // communicate with. This is necessary for handling PackStruct XML
+        // encoding issues.
+        utils::store_server_version_in_client_properties(*conn);
+
         status = clientLogin( conn );
         if ( status != 0 ) {
             rcDisconnect( conn );
@@ -231,6 +235,12 @@ main( int argc, char **argv ) {
                     }
                     continue;
                 }
+
+                // Set the version of the iRODS server this binary is built to
+                // communicate with. This is necessary for handling PackStruct XML
+                // encoding issues.
+                utils::store_server_version_in_client_properties(*conn);
+
                 status = clientLogin( conn );
                 if ( status != 0 ) {
                     rcDisconnect( conn );
@@ -294,6 +304,12 @@ main( int argc, char **argv ) {
             fprintf( stderr, "rcConnect error\n" );
             return 1;
         }
+
+        // Set the version of the iRODS server this binary is built to
+        // communicate with. This is necessary for handling PackStruct XML
+        // encoding issues.
+        utils::store_server_version_in_client_properties(*conn);
+
         status = clientLogin( conn );
         if ( status != 0 ) {
             fprintf( stderr, "clientLogin error\n" );

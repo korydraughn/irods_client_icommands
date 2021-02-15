@@ -1,22 +1,17 @@
-/*** Copyright (c), The Regents of the University of California            ***
- *** For more information please refer to files in the COPYRIGHT directory ***/
-/*
-  ips.c - Command to get the stat of irods agents running in the federation..
-*/
-
 #include "rodsClient.h"
 #include "parseCommandLine.h"
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
 
-int
-printProcStat( rodsArguments_t *myRodsArgs, genQueryOut_t *procStatOut );
-int
-getUptimeStr( uint startTime, uint curTime, char *outStr );
+#include "utility.hpp"
+
+int printProcStat( rodsArguments_t *myRodsArgs, genQueryOut_t *procStatOut );
+
+int getUptimeStr( uint startTime, uint curTime, char *outStr );
+
 void usage();
-int
-initCondForProcStat( rodsArguments_t *rodsArgs,
-                     procStatInp_t *procStatInp );
+
+int initCondForProcStat( rodsArguments_t *rodsArgs, procStatInp_t *procStatInp );
 
 int
 main( int argc, char **argv ) {
@@ -65,6 +60,11 @@ main( int argc, char **argv ) {
     if ( conn == NULL ) {
         return 2;
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*conn);
 
     if ( strcmp( myEnv.rodsUserName, PUBLIC_USER_NAME ) != 0 ) {
         status = clientLogin( conn );

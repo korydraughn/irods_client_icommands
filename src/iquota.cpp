@@ -1,14 +1,9 @@
-/*** Copyright (c), The Regents of the University of California            ***
- *** For more information please refer to files in the COPYRIGHT directory ***/
-
-/*
-  User interface to display quota information.
-*/
-
 #include "rods.h"
 #include "rodsClient.h"
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
+
+#include "utility.hpp"
 
 #define BIG_STR 200
 #define QUOTA_APPROACH_WARNING_SIZE -10000000000LL
@@ -20,7 +15,6 @@ rcComm_t *Conn;
 rodsEnv myEnv;
 
 void usage();
-
 
 /*
  print a number nicely, that is with commas and summary magnitude
@@ -545,6 +539,11 @@ main( int argc, char **argv ) {
     if ( Conn == NULL ) {
         exit( 2 );
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*Conn);
 
     status = clientLogin( Conn );
     if ( status != 0 ) {

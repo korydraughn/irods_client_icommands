@@ -1,10 +1,9 @@
-/*** Copyright (c), The Regents of the University of California            ***
- *** For more information please refer to files in the COPYRIGHT directory ***/
-
 #include "rodsClient.h"
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
 #include "data_object_modify_info.h"
+
+#include "utility.hpp"
 
 void usage();
 
@@ -57,7 +56,6 @@ printGenQueryResults( rcComm_t *Conn, int status, genQueryOut_t *genQueryOut,
     }
     return printCount;
 }
-
 
 /* perform the ls command */
 int
@@ -368,6 +366,11 @@ main( int argc, char **argv ) {
         free( mySubName );
         exit( 2 );
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*Conn);
 
     status = clientLogin( Conn );
     if ( status != 0 ) {

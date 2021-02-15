@@ -1,14 +1,9 @@
-/*** Copyright (c), The Regents of the University of California            ***
- *** For more information please refer to files in the COPYRIGHT directory ***/
-/*
-  Simple command to get the misc server info.
-  Tests connecting to the server.
-*/
-
 #include "rodsClient.h"
 #include "parseCommandLine.h"
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
+
+#include "utility.hpp"
 
 void usage();
 
@@ -55,6 +50,11 @@ main( int argc, char **argv ) {
     if ( Conn == NULL ) {
         exit( 2 );
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*Conn);
 
     status = rcGetMiscSvrInfo( Conn, &miscSvrInfo );
     if ( status < 0 ) {

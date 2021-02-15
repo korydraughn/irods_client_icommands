@@ -1,9 +1,3 @@
-/*** Copyright (c), The Regents of the University of California            ***
- *** For more information please refer to files in the COPYRIGHT directory ***/
-/*
- * icp - The irods cp utility
-*/
-
 #include "rodsClient.h"
 #include "parseCommandLine.h"
 #include "rodsPath.h"
@@ -11,6 +5,8 @@
 #include "rcGlobalExtern.h"
 #include "irods_client_api_table.hpp"
 #include "irods_pack_table.hpp"
+
+#include "utility.hpp"
 
 void usage();
 
@@ -82,6 +78,11 @@ main( int argc, char **argv ) {
     if ( conn == NULL ) {
         exit( 2 );
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*conn);
 
     status = clientLogin( conn );
     if ( status != 0 ) {

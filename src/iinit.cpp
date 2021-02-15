@@ -1,14 +1,8 @@
-/*** Copyright (c), The Regents of the University of California            ***
- *** For more information please refer to files in the COPYRIGHT directory ***/
-// =-=-=-=-=-=-=-
-// irods includes
 #include "rods.h"
 #include "parseCommandLine.h"
 #include "rcMisc.h"
 #include "rodsClient.h"
 #include "rcConnect.h"
-
-// =-=-=-=-=-=-=-
 #include "irods_native_auth_object.hpp"
 #include "irods_pam_auth_object.hpp"
 #include "irods_gsi_object.hpp"
@@ -18,6 +12,8 @@
 #include "irods_pack_table.hpp"
 #include "irods_environment_properties.hpp"
 #include "irods_kvp_string_parser.hpp"
+
+#include "utility.hpp"
 
 #include "boost/lexical_cast.hpp"
 
@@ -281,6 +277,11 @@ int main( int argc, char **argv )
                  my_env.rodsHost );
         return 2;
     }
+
+    // Set the version of the iRODS server this binary is built to
+    // communicate with. This is necessary for handling PackStruct XML
+    // encoding issues.
+    utils::store_server_version_in_client_properties(*Conn);
 
     // =-=-=-=-=-=-=-
     // PAM auth gets special consideration, and also includes an
