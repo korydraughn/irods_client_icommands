@@ -853,15 +853,16 @@ generalAdmin( int userOption, char *arg0, char *arg1, char *arg2, char *arg3,
     // JMC :: for 'dryrun' option on rmresc we need to capture the
     //     :: return value and simply output either SUCCESS or FAILURE
     // rm resource dryrun BOOYA
-    if ( _rodsArgs &&
-            _rodsArgs->dryrun == true &&
-            0 == strcmp( arg0, "rm" ) &&
-            0 == strcmp( arg1, "resource" ) ) {
-        if ( 0 == status ) {
-            printf( "DRYRUN REMOVING RESOURCE [%s - %d] :: SUCCESS\n", arg2, status );
+    if (_rodsArgs &&
+        _rodsArgs->dryrun &&
+        strcmp(arg0, "rm") == 0 &&
+        strcmp(arg1, "resource") == 0)
+    {
+        if (0 == status) {
+            printf("DRYRUN REMOVING RESOURCE [%s - %d] :: SUCCESS\n", arg2, status);
         }
         else {
-            printf( "DRYRUN REMOVING RESOURCE [%s - %d] :: FAILURE\n", arg2, status );
+            printf("DRYRUN REMOVING RESOURCE [%s - %d] :: FAILURE\n", arg2, status);
         } // else
     }
     else if ( status == USER_INVALID_USERNAME_FORMAT ) {
@@ -1273,18 +1274,24 @@ doCommand( char *cmdToken[], rodsArguments_t* _rodsArgs = 0 ) {
         /* (add resource name type host:path contextstring) */
         return 0;
     }
-    if ( strcmp( cmdToken[0], "addchildtoresc" ) == 0 ) {
 
+    if ( strcmp( cmdToken[0], "addchildtoresc" ) == 0 ) {
         generalAdmin( 0, "add", "childtoresc", cmdToken[1], cmdToken[2],
                       cmdToken[3], "", "", "", "", "" );
         /* (add childtoresc parent child context) */
         return 0;
     }
-    if ( strcmp( cmdToken[0], "rmchildfromresc" ) == 0 ) {
 
+    if ( strcmp( cmdToken[0], "rmchildfromresc" ) == 0 ) {
         generalAdmin( 0, "rm", "childfromresc", cmdToken[1], cmdToken[2],
                       "", "", "", "", "", "" );
         /* (rm childfromresc parent child) */
+        return 0;
+    }
+
+    if (strcmp(cmdToken[0], "setparentresc") == 0) {
+        generalAdmin(0, "setparentresc", cmdToken[1], cmdToken[2],
+                     "", "", "", "", "", "", "");
         return 0;
     }
 
