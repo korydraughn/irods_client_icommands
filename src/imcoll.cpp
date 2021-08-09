@@ -30,10 +30,11 @@ main( int argc, char **argv ) {
     int nArgv;
 
     irods::at_scope_exit free_rods_path_input{[&rpi = rodsPathInp] {
+        clearRodsPathInp(&rpi);
         // clang-format off
-        if (rpi.srcPath)  { std::free(rpi.srcPath); }
-        if (rpi.destPath) { std::free(rpi.destPath); }
-        if (rpi.targPath) { std::free(rpi.targPath); }
+        //if (rpi.srcPath)  { std::free(rpi.srcPath); }
+        //if (rpi.destPath) { std::free(rpi.destPath); }
+        //if (rpi.targPath) { std::free(rpi.targPath); }
         // clang-format on
     }};
 
