@@ -57,12 +57,12 @@ main( int argc, char **argv ) {
         exit( 2 );
     }
 
-    if ((irods::to_version(Conn->svrVersion->relVersion) < irods::version{4, 3, 4})) {
+    if (const auto vers = irods::to_version(Conn->svrVersion->relVersion); vers && *vers < irods::version{4, 3, 4}) {
         // iRODS 4.3.3 and earlier do not support the certinfo member variable. This if-branch
         // allows iRODS 4.3.4 and later implementations to invoke the API without segfaulting.
         // This is accomplished by using a custom packing instruction for deserialization of the
         // output data structure.
-        constexpr const char* pi_name = "pi_name";
+        constexpr const char* pi_name = "compat433_MiscSvrInfo_PI";
         constexpr const char* pi_instruction = "int serverType; int serverBootTime; str relVersion[NAME_LEN]; str "
                                                "apiVersion[NAME_LEN]; str rodsZone[NAME_LEN];";
         // clang-format off
